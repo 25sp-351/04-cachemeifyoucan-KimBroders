@@ -1,0 +1,9 @@
+.history
+.jj
+.env
+.o
+.ob
+.exe
+.ilk
+.pdb
+node_modules/
