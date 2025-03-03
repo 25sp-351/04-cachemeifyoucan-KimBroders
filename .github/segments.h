@@ -1,6 +1,7 @@
 #ifndef SEGMENTS_H
 #define SEGMENTS_H
-#define maxSegments 100U
+#define MAX_SEGMENTS 100U
+#define STR_BUFFER 256
 
 typedef struct segment segment;
 struct segment
@@ -10,7 +11,7 @@ struct segment
 };
 
 extern unsigned int numSegments; // global variable stores the number of segments
-extern segment segments[maxSegments]; // global variable stores the segments
+extern segment segments[MAX_SEGMENTS]; // global variable stores the segments
 
 unsigned int loadSegments(const char* pFilename); // loads the segments from a file, return the number of segments loaded. returns -1 on a failure
 

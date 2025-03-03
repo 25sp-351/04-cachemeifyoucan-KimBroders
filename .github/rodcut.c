@@ -3,15 +3,16 @@
 #include "segments.h"
 #include "cache.h"
 
-// split the Rod; returns total value; also update *pRem with remainder and cuts with number of cuts of each size
-// recursive implementation; try each cut that will fit and recurse to cut the remainder.  Select the highest value cut…
-unsigned splitRod(const unsigned rodLength, unsigned *pRem, unsigned quantities[])
-{
-    *pRem = rodLength;
+unsigned splitRod(const unsigned rodLength, unsigned *pRemainder, unsigned quantities[]) {
+	// takes a rodLength, a pointer to an unsigned int pRemainder, and an array of unsigned ints quantities
+	// split the Rod; returns total value; also update *pRemainder with remainder and cuts with number of cuts of each size
+	// recursive implementation; try each cut that will fit and recurse to cut the remainder.  Select the highest value cut…
+	// returns total value of the split rod
+    *pRemainder = rodLength;
     if (rodLength == 0) {
         return 0;
     }
-	unsigned maxValue = getFromCache(rodLength, pRem, quantities);
+	unsigned maxValue = getFromCache(rodLength, pRemainder, quantities);
     if (maxValue != -1) {
         return maxValue;
     }
@@ -19,20 +20,22 @@ unsigned splitRod(const unsigned rodLength, unsigned *pRem, unsigned quantities[
     maxValue = 0;
 
 	memset(quantities, 0, sizeof(unsigned) * numSegments);
-	for (unsigned seg = 0U; seg < numSegments; ++seg) {
-		if (rodLength >= segments[seg].length) {
-            unsigned rem;
-			unsigned subQuantities[maxSegments];
+	for (unsigned segmentIx = 0U; segmentIx < numSegments; ++segmentIx) {
+		if (rodLength >= segments[segmentIx].length) {
+            unsigned remainder;
+			unsigned subQuantities[MAX_SEGMENTS];
+
 			memset(subQuantities, 0, sizeof(unsigned) * numSegments); // clear out the interesting part of the array
-			unsigned value = segments[seg].value + splitRod(rodLength - segments[seg].length, &rem, subQuantities);
+			unsigned value = segments[segmentIx].value + splitRod(rodLength - segments[segmentIx].length, &remainder, subQuantities);
+
 			if (value > maxValue) {
 				maxValue = value;
-				*pRem = rem;
+				*pRemainder = remainder;
 				memcpy(quantities, subQuantities, sizeof(unsigned) * numSegments);
-				quantities[seg] += 1;
+				quantities[segmentIx] += 1;
 			}
 		}
 	}
-    putInCache(rodLength, *pRem, quantities, maxValue);
+    putInCache(rodLength, *pRemainder, quantities, maxValue);
 	return maxValue;
 }
